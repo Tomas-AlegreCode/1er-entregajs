@@ -3,11 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simulador de Tienda de Videojuegos</title>
+  <title>Tienda de Videojuegos</title>
+  <link rel="stylesheet" href="./css/style.css">
 </head>
 <body>
-  <h1>Simulador de Tienda de Videojuegos</h1>
-  <p>El prompt y alert hacen que todo suceda</p>
+  <div class="container">
+    <h1>The Arcade <br> Tienda de Videojuegos
+    </h1>
+    
+    <div class="games" id="gameList">
+    </div>
+    
+    <div class="cart">
+      <h2>Tu Carrito</h2>
+      <div id="cartItems">
+      </div>
+      <div id="cartTotal">Total: $0</div>
+      <button id="checkoutBtn">Comprar</button>
+      <button id="clearCartBtn">Vaciar Carrito</button>
+    </div>
+  </div>
+
   <script src="./js/javascript.js"></script>
 </body>
 </html>
