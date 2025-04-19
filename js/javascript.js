@@ -8,13 +8,15 @@ const videojuegos = [
 ];
 
 // Carrito de compras
-let carrito = [];
+let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
 
+// Elementos del DOM
 const gameListElement = document.getElementById('gameList');
 const cartItemsElement = document.getElementById('cartItems');
 const cartTotalElement = document.getElementById('cartTotal');
 const checkoutBtn = document.getElementById('checkoutBtn');
 const clearCartBtn = document.getElementById('clearCartBtn');
+const mensajeCompra = document.getElementById('mensajeCompra') || document.createElement('div');
 
 // Mostrar los videojuegos disponibles
 function mostrarJuegos() {
@@ -32,15 +34,30 @@ function mostrarJuegos() {
   });
 }
 
+// Mostrar notificaciones
+function mostrarNotificacion(mensaje, tipo = 'éxito') {
+  const notificacion = document.createElement('div');
+  notificacion.textContent = mensaje;
+  notificacion.style.position = 'fixed';
+  notificacion.style.top = '20px';
+  notificacion.style.right = '20px';
+  notificacion.style.padding = '12px';
+  notificacion.style.background = tipo === 'éxito' ? '#4CAF50' : '#f44336';
+  notificacion.style.color = 'white';
+  notificacion.style.borderRadius = '5px';
+  notificacion.style.zIndex = '1000';
+  document.body.appendChild(notificacion);
+  
+  setTimeout(() => notificacion.remove(), 2000);
+}
+
 // Agregar juego al carrito
 function agregarAlCarrito(index) {
   const juego = videojuegos[index];
   carrito.push(juego);
   actualizarCarrito();
-  
-  setTimeout(() => {
-    notificacion.remove();
-  }, 2000);
+  guardarCarrito();
+  mostrarNotificacion(`✅ ${juego.nombre} agregado al carrito`);
 }
 
 // Actualizar el carrito
@@ -68,25 +85,45 @@ function actualizarCarrito() {
   cartTotalElement.textContent = `Total: $${total}`;
 }
 
+// Guardar carrito en localStorage
+function guardarCarrito() {
+  localStorage.setItem('carrito', JSON.stringify(carrito));
+}
+
 // Finalizar compra
-checkoutBtn.addEventListener('click', () => {
+function finalizarCompra() {
   if (carrito.length === 0) {
-    alert('El carrito está vacío');
+    mostrarNotificacion('🛒 El carrito está vacío', 'error');
     return;
   }
-  
+
   const total = carrito.reduce((sum, juego) => sum + juego.precio, 0);
-  alert(`¡Gracias por tu compra!\nTotal: $${total}`);
+  mostrarNotificacion(`🎉 Compra exitosa! Total: $${total}`);
+  
   carrito = [];
   actualizarCarrito();
-});
+  guardarCarrito();
+}
 
 // Vaciar carrito
-clearCartBtn.addEventListener('click', () => {
+function vaciarCarrito() {
   carrito = [];
   actualizarCarrito();
-});
+  guardarCarrito();
+  mostrarNotificacion('Carrito vaciado');
+}
+
+// Event listeners
+checkoutBtn.addEventListener('click', finalizarCompra);
+clearCartBtn.addEventListener('click', vaciarCarrito);
 
 // Iniciar la aplicación
-mostrarJuegos();
-actualizarCarrito();
+document.addEventListener('DOMContentLoaded', () => {
+  if (!document.getElementById('mensajeCompra')) {
+    const msgDiv = document.createElement('div');
+    msgDiv.id = 'mensajeCompra';
+    document.querySelector('.cart-container').appendChild(msgDiv);
+  }
+  mostrarJuegos();
+  actualizarCarrito();
+});
